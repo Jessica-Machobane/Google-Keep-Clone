@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keep</title>
+  <meta name="description" content="A simplified Google Keep clone built with HTML, CSS and JavaScript." />
+
+  <!-- Fonts: Roboto (text) + Material Symbols (icons) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============ Top app bar ============ -->
+  <header class="top-bar">
+    <div class="top-bar__left">
+      <button class="icon-btn" id="menu-btn" data-tooltip="Main menu" aria-label="Main menu">
+        <span class="material-symbols-rounded">menu</span>
+      </button>
+      <a class="brand" href="index.html">
+        <span class="brand__logo material-symbols-rounded">lightbulb</span>
+        <span class="brand__name">Keep</span>
+      </a>
+    </div>
+
+    <div class="search">
+      <span class="material-symbols-rounded search__icon">search</span>
+      <input id="search-input" type="search" placeholder="Search" aria-label="Search notes" autocomplete="off" />
+    </div>
+
+    <div class="top-bar__right">
+      <button class="icon-btn" id="refresh-btn" data-tooltip="Refresh" aria-label="Refresh">
+        <span class="material-symbols-rounded">refresh</span>
+      </button>
+      <button class="icon-btn" id="layout-btn" data-tooltip="List view" aria-label="Toggle layout">
+        <span class="material-symbols-rounded">view_list</span>
+      </button>
+      <button class="icon-btn" id="theme-btn" data-tooltip="Toggle dark theme" aria-label="Toggle dark theme">
+        <span class="material-symbols-rounded">dark_mode</span>
+      </button>
+      <button class="icon-btn avatar" data-tooltip="Google Account" aria-label="Account">J</button>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- ============ Side navigation ============ -->
+    <nav class="sidebar" id="sidebar" aria-label="Note views">
+      <button class="nav-item active" data-view="notes">
+        <span class="material-symbols-rounded">lightbulb</span>Notes
+      </button>
+      <button class="nav-item" data-view="reminders">
+        <span class="material-symbols-rounded">notifications</span>Reminders
+      </button>
+      <button class="nav-item" id="edit-labels-btn">
+        <span class="material-symbols-rounded">edit</span>Edit labels
+      </button>
+      <button class="nav-item" data-view="archive">
+        <span class="material-symbols-rounded">archive</span>Archive
+      </button>
+      <button class="nav-item" data-view="bin">
+        <span class="material-symbols-rounded">delete</span>Bin
+      </button>
+    </nav>
+
+    <!-- ============ Main content ============ -->
+    <main class="main">
+
+      <!-- "Dark theme is here" banner -->
+      <section class="banner" id="banner" hidden>
+        <span class="banner__icon material-symbols-rounded">dark_mode</span>
+        <div class="banner__copy">
+          <h2>Dark theme is here</h2>
+          <p>Enjoy a more comfortable reading experience. Toggle on or off in Settings.</p>
+        </div>
+        <div class="banner__actions">
+          <button class="text-btn" id="banner-dismiss">Got it</button>
+          <button class="text-btn" id="banner-enable">Turn it on</button>
+        </div>
+      </section>
+
+      <!-- Quick "Take a note..." bar -->
+      <section class="note-creator" id="note-creator" data-action="open" role="button" tabindex="0" aria-label="Take a note">
+        <span class="note-creator__placeholder">Take a note...</span>
+        <div class="note-creator__icons">
+          <button class="icon-btn" data-tooltip="New list" aria-label="New list"><span class="material-symbols-rounded">check_box</span></button>
+          <button class="icon-btn" data-tooltip="New drawing" aria-label="New drawing"><span class="material-symbols-rounded">brush</span></button>
+          <button class="icon-btn" data-tooltip="New image" aria-label="New image"><span class="material-symbols-rounded">image</span></button>
+        </div>
+      </section>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="empty-state" hidden>
+        <span class="material-symbols-rounded empty-state__icon" id="empty-icon">lightbulb</span>
+        <p id="empty-text">Notes you add appear here</p>
+      </div>
+
+      <!-- Notes: pinned section + everything else -->
+      <section id="pinned-section">
+        <h2 class="section-label" id="pinned-label" hidden>Pinned</h2>
+        <div class="notes-grid" id="pinned-grid"></div>
+      </section>
+      <section id="others-section">
+        <h2 class="section-label" id="others-label" hidden>Others</h2>
+        <div class="notes-grid" id="others-grid"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Floating colour picker (note cards) -->
+  <div class="palette-pop" id="palette-pop" hidden></div>
+
+  <!-- Create / edit note modal -->
+  <dialog class="note-modal" id="note-modal">
+    <form method="dialog" class="modal-card" id="modal-card">
+      <input class="modal-title" id="modal-title" placeholder="Title" maxlength="120" autocomplete="off" />
+      <textarea class="modal-text" id="modal-text" placeholder="Take a note..." maxlength="4000"></textarea>
+      <footer class="modal-footer">
+        <button type="button" class="icon-btn" id="modal-palette" data-tooltip="Background options" aria-label="Background options">
+          <span class="material-symbols-rounded">palette</span>
+        </button>
+        <button type="button" class="icon-btn" id="modal-archive" data-tooltip="Archive" aria-label="Archive">
+          <span class="material-symbols-rounded">archive</span>
+        </button>
+        <button type="button" class="icon-btn" id="modal-delete" data-tooltip="Delete" aria-label="Delete">
+          <span class="material-symbols-rounded">delete</span>
+        </button>
+        <span class="modal-colors" id="modal-colors"></span>
+        <button type="submit" class="text-btn">Close</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast" role="status">
+    <span id="toast-message"></span>
+    <button class="text-btn" id="toast-undo" hidden>Undo</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
